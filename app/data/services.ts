@@ -9,7 +9,7 @@ export const services: Service[] = [
       'از ساماندهی دفاتر و اسناد مالی تا تهیه صورت‌های مالی استاندارد و حسابرسی مستقل، همه چیز را با دقت و نظم حرفه‌ای به شما می‌سپاریم.',
     icon: 'Calculator',
     image:
-      'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1600&q=80',
+      '/images/unsplash-1554224155-6726b3ff858f-1600.jpg',
     accent: 'from-brand-600 to-navy-800',
     problems: [
       'دفاتر و اسناد مالی نامنظم که تهیه گزارش دقیق را دشوار می‌کند.',
@@ -52,7 +52,7 @@ export const services: Service[] = [
       'از تهیه و ارسال اظهارنامه تا دفاع مالیاتی و برنامه‌ریزی قانونی، مالیات را به یک فرصت برنامه‌ریزی‌شده تبدیل می‌کنیم.',
     icon: 'ReceiptText',
     image:
-      'https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=1600&q=80',
+      '/images/unsplash-1554224154-26032ffc0d07-1600.jpg',
     accent: 'from-brand-500 to-brand-700',
     problems: [
       'نگرانی از جریمه‌ها و دیرکردهای مالیاتی.',
@@ -94,7 +94,7 @@ export const services: Service[] = [
       'با تحلیل داده‌های مالی، بودجه‌بندی و طراحی مدل کسب‌وکار، به مدیران کمک می‌کنیم تصمیم‌های مالی مهم را با اطمینان بگیرند.',
     icon: 'TrendingUp',
     image:
-      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80',
+      '/images/unsplash-1454165804606-c3d57bc86b40-1600.jpg',
     accent: 'from-navy-700 to-navy-900',
     problems: [
       'تصمیم‌گیری بر پایه حدس به‌جای داده مالی.',
@@ -136,7 +136,7 @@ export const services: Service[] = [
       'دوره‌های کاربردی و پروژه‌محور که شما را از مفاهیم پایه تا مهارت‌های واقعی و مورد نیاز بازار کار حسابداری همراهی می‌کنند.',
     icon: 'GraduationCap',
     image:
-      'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1600&q=80',
+      '/images/unsplash-1524178232363-1fb2b075b655-1600.jpg',
     accent: 'from-brand-600 to-navy-800',
     problems: [
       'نبود مهارت عملی کافی در فارغ‌التحصیلان.',
@@ -178,7 +178,7 @@ export const services: Service[] = [
       'پلی میان حسابداران متخصص و کسب‌وکارهایی که به نیروی مالی قابل اعتماد نیاز دارند؛ از ارزیابی تا هماهنگی مصاحبه.',
     icon: 'Users',
     image:
-      'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=80',
+      '/images/unsplash-1521737711867-e3b97375f902-1600.jpg',
     accent: 'from-navy-800 to-brand-700',
     problems: [
       'دشواری یافتن حسابدار متخصص و قابل اعتماد.',
@@ -220,7 +220,7 @@ export const services: Service[] = [
       'برخی کسب‌وکارها به راهکاری فراتر از بسته‌های استاندارد نیاز دارند؛ خدمات سفارشی مالی را متناسب با شرایط شما طراحی می‌کنیم.',
     icon: 'BriefcaseBusiness',
     image:
-      'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=1600&q=80',
+      '/images/unsplash-1504868584819-f8e8b4b6d7e3-1600.jpg',
     accent: 'from-brand-500 to-navy-800',
     problems: [
       'نیازهای مالی خاص که بسته‌های استاندارد پاسخگوی آن نیست.',

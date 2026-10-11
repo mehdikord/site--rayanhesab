@@ -39,7 +39,7 @@ export default function AboutPage() {
               <div className="relative">
                 <div className="img-frame relative aspect-[4/3] overflow-hidden rounded-[30px] shadow-card">
                   <Image
-                    src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1400&q=80"
+                    src="/images/unsplash-1556761175-5973dc0f32e7-1400.jpg"
                     alt="تیم رایان حساب صبا در جلسه کاری"
                     fill
                     sizes="(max-width: 1024px) 100vw, 560px"

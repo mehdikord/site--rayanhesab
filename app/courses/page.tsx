@@ -25,7 +25,7 @@ export default function CoursesPage() {
         title="دوره‌هایی که مهارت واقعی می‌سازند"
         description="آموزش‌های کاربردی و پروژه‌محور برای ورود به بازار کار و رشد شغلی در حوزه حسابداری و مالی."
         breadcrumbs={[{ label: 'دوره‌ها' }]}
-        image="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1600&q=80"
+        image="/images/unsplash-1524178232363-1fb2b075b655-1600.jpg"
       >
         <div className="grid gap-5 sm:grid-cols-3">
           {highlights.map((h) => (

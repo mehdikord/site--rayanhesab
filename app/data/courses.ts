@@ -7,7 +7,7 @@ export const courses: Course[] = [
     excerpt: 'یادگیری ثبت اسناد، مبانی ترازنامه و صورت سود و زیان با تمرین‌های واقعی.',
     description:
       'برای افرادی که بدون پیش‌زمینه وارد دنیای حسابداری می‌شوند؛ قدم‌به‌قدم از مفاهیم پایه تا توانایی ثبت رویدادهای مالی روزمره.',
-    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/unsplash-1504868584819-f8e8b4b6d7e3-1100.jpg',
     category: 'حسابداری مقدماتی',
     instructor: 'نازنین رحیمی',
     instructorRole: 'مدرس حسابداری مالی',
@@ -44,7 +44,7 @@ export const courses: Course[] = [
     excerpt: 'از بستن حساب‌های پایان دوره تا گزارش‌های قابل اتکا برای مدیران و حسابرسان.',
     description:
       'دوره‌ای برای آموختگان مقدماتی که می‌خواهند مهارت تهیه صورت‌های مالی استاندارد، ذخایر، اصلاحات و گزارش‌های مدیریتی را بیاموزند.',
-    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/unsplash-1454165804606-c3d57bc86b40-1100.jpg',
     category: 'حسابداری حرفه‌ای',
     instructor: 'فرهاد کریمی',
     instructorRole: 'حسابدار رسمی و مشاور مالی',
@@ -72,7 +72,7 @@ export const courses: Course[] = [
     excerpt: 'از اظهارنامه تا فهرست معاملات فصلی و ارزش افزوده؛ عملی و به‌روز.',
     description:
       'تمام آنچه برای انجام صحیح تکالیف مالیاتی اشخاص حقیقی و حقوقی نیاز دارید، با زبانی ساده و مثال‌های واقعی توضیح داده می‌شود.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/unsplash-1460925895917-afdab827c52f-1100.jpg',
     category: 'مالیات',
     instructor: 'سارا مهدوی',
     instructorRole: 'مشاور مالیاتی',
@@ -98,7 +98,7 @@ export const courses: Course[] = [
     excerpt: 'یک کارگاه فشرده عملی برای ارسال اظهارنامه بدون استرس.',
     description:
       'کارگاه دوهفته‌ای و پروژه‌محور که مرحله‌به‌مرحله یک پرونده واقعی اظهارنامه را تکمیل می‌کنید.',
-    image: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/unsplash-1554224154-26032ffc0d07-1100.jpg',
     category: 'مالیات',
     instructor: 'امیرحسین طباطبایی',
     instructorRole: 'مدرس حقوق مالیاتی',
@@ -123,7 +123,7 @@ export const courses: Course[] = [
     excerpt: 'دفتر داری روزانه، انبارداری و خزانه‌داری روی یک سیستم نمونه فروشگاهی.',
     description:
       'برخلاف آموزش‌های صرفاً تئوری، در این دوره از روز اول روی یک سیستم نمونه فروشگاهی، ثبت‌های روزانه را انجام می‌دهید.',
-    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/unsplash-1524178232363-1fb2b075b655-1100.jpg',
     category: 'مهارت‌های بازار کار',
     instructor: 'الهام کیانی',
     instructorRole: 'مدرس حسابداری کاربردی',
@@ -149,7 +149,7 @@ export const courses: Course[] = [
     excerpt: 'محاسبه حقوق، بیمه تأمین اجتماعی و مالیات حقوق طبق آخرین رویه‌ها.',
     description:
       'دوره‌ای برای مسئولین کارگزینی و حسابداران حقوق که می‌خواهند لیست حقوق، بیمه و مالیات را بدون خطا تهیه و ارسال کنند.',
-    image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/unsplash-1521737711867-e3b97375f902-1100.jpg',
     category: 'حقوق و دستمزد',
     instructor: 'رضا عباسی',
     instructorRole: 'مشاور کار و تأمین اجتماعی',
@@ -174,7 +174,7 @@ export const courses: Course[] = [
     excerpt: 'حسابرسی را از نگاه حسابرس مستقل، قدم‌به‌قدم بیاموزید.',
     description:
       'با استانداردهای حسابرسی، روش‌های نمونه‌گیری، کاربرگ‌نویسی و تهیه گزارش نهایی آشنا می‌شوید.',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/unsplash-1497366216548-37526070297c-1100.jpg',
     category: 'حسابرسی',
     instructor: 'پیمان شریفی',
     instructorRole: 'حسابرس مستقل',
@@ -199,7 +199,7 @@ export const courses: Course[] = [
     excerpt: 'نسبت‌های مالی، تحلیل روند و پیش‌بینی جریان نقدی در یک قالب مدیریتی.',
     description:
       'دوره‌ای برای مدیران و تحلیلگران که می‌خواهند با ابزار ساده، سلامت مالی یک کسب‌وکار را بسنجند و برای آینده برنامه بریزند.',
-    image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/unsplash-1553877522-43269d4ea984-1100.jpg',
     category: 'مدیریت مالی',
     instructor: 'مهدی ناصری',
     instructorRole: 'تحلیلگر مالی',

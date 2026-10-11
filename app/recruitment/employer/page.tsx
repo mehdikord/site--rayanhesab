@@ -27,7 +27,7 @@ export default function EmployerPage() {
         title="درخواست جذب حسابدار"
         description="نیاز خود به نیروی حسابداری متخصص را ثبت کنید تا گزینه‌های متناسب با شرایط شما معرفی شوند."
         breadcrumbs={[{ label: 'جذب نیرو', href: '/recruitment' }, { label: 'درخواست جذب حسابدار' }]}
-        image="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80"
+        image="/images/unsplash-1521737604893-d14cc237f11d-1600.jpg"
       />
 
       <main className="flex-1">

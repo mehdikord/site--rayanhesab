@@ -21,7 +21,7 @@ export default function TeamPage() {
         title="متخصصانی که همراه شما هستند"
         description="تیمی متشکل از حسابداران، مشاوران مالیاتی، حسابرسان و متخصصان جذب نیرو که در کنار هم تصویری کامل از نیازهای مالی کسب‌وکار شما ارائه می‌دهند."
         breadcrumbs={[{ label: 'تیم ما' }]}
-        image="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80"
+        image="/images/unsplash-1521737604893-d14cc237f11d-1600.jpg"
       />
 
       <main className="flex-1">

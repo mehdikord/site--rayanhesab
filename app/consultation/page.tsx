@@ -32,7 +32,7 @@ export default function ConsultationPage() {
         title="برای تصمیم‌های مالی مهم، تنها تصمیم نگیرید"
         description="نیاز کسب‌وکار خود را با ما مطرح کنید تا برای بررسی شرایط و ارائه راهکار مناسب با شما تماس بگیریم."
         breadcrumbs={[{ label: 'درخواست مشاوره' }]}
-        image="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1600&q=80"
+        image="/images/unsplash-1517048676732-d65bc937f952-1600.jpg"
       />
 
       <main className="flex-1">

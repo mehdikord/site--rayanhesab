@@ -23,7 +23,7 @@ export default function ArticlesPage() {
         title="مقالات و راهنمای مالی"
         description="محتوای کاربردی درباره مالیات، حسابداری، مدیریت مالی و رشد حرفه‌ای برای مدیران و حسابداران."
         breadcrumbs={[{ label: 'مقالات' }]}
-        image="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1600&q=80"
+        image="/images/unsplash-1450101499163-c8848c66ca85-1600.jpg"
       />
 
       <main className="flex-1">

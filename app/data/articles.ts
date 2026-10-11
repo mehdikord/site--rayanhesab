@@ -15,7 +15,7 @@ export const articles: Article[] = [
     title: 'چک‌لیست آماده‌سازی اظهارنامه مالیاتی بدون جریمه',
     excerpt:
       'پیش از فصل اظهارنامه، این چک‌لیست را مرور کنید تا با مدارک کامل و بدون استرس، تکالیف مالیاتی خود را انجام دهید.',
-    image: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=1600&q=80',
+    image: '/images/unsplash-1554224154-26032ffc0d07-1600.jpg',
     category: 'مالیات',
     date: '۱۸ مهر ۱۴۰۴',
     dateIso: '2025-10-10',
@@ -73,7 +73,7 @@ export const articles: Article[] = [
     title: 'بستن حساب‌های ماهانه: پنج اصل برای گزارش‌های سریع‌تر و دقیق‌تر',
     excerpt:
       'بستن ماهانه‌ای که چند روز طول می‌کشد، کارایی مدیران را پایین می‌آورد. این پنج اصل، چرخه بستن شما را کوتاه می‌کند.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80',
+    image: '/images/unsplash-1551288049-bebda4e38f71-1600.jpg',
     category: 'حسابداری',
     date: '۹ مهر ۱۴۰۴',
     dateIso: '2025-10-01',
@@ -114,7 +114,7 @@ export const articles: Article[] = [
     title: 'چرا سود حسابداری به معنای پول در جیب شما نیست؟',
     excerpt:
       'بسیاری از کسب‌وکارهای سودده، به دلیل بی‌توجهی به جریان نقدی، به مشکل می‌خورند. تفاوت سود و نقدینگی را بشناسید.',
-    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1600&q=80',
+    image: '/images/unsplash-1560250097-0b93528c311a-1600.jpg',
     category: 'مدیریت مالی',
     date: '۲ مهر ۱۴۰۴',
     dateIso: '2025-09-24',
@@ -152,7 +152,7 @@ export const articles: Article[] = [
     title: 'کنترل داخلی برای کسب‌وکارهای کوچک؛ از کجا شروع کنیم؟',
     excerpt:
       'کنترل داخلی فقط برای شرکت‌های بزرگ نیست. با چند اقدام ساده می‌توانید ریسک تقلب و خطا را به‌شدت کاهش دهید.',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1600&q=80',
+    image: '/images/unsplash-1497366216548-37526070297c-1600.jpg',
     category: 'حسابرسی',
     date: '۲۵ شهریور ۱۴۰۴',
     dateIso: '2025-09-16',
@@ -183,7 +183,7 @@ export const articles: Article[] = [
     title: 'راهنمای انتخاب نرم‌افزار حسابداری مناسب کسب‌وکار شما',
     excerpt:
       'انتخاب نرم‌افزار اشتباه، هزینه‌ای پنهان است. معیارهای درست انتخاب را بشناسید و متناسب با مقیاس خود تصمیم بگیرید.',
-    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=1600&q=80',
+    image: '/images/unsplash-1504868584819-f8e8b4b6d7e3-1600.jpg',
     category: 'حسابداری',
     date: '۱۸ شهریور ۱۴۰۴',
     dateIso: '2025-09-09',
@@ -214,7 +214,7 @@ export const articles: Article[] = [
     title: 'مالیات بر ارزش افزوده در عمل: گردش کار ماهانه صحیح',
     excerpt:
       'از ثبت فاکتور تا ارسال اظهارنامه دوره‌ای، یک گردش کار روشن و قابل اجرا برای مدیریت ارزش افزوده.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80',
+    image: '/images/unsplash-1460925895917-afdab827c52f-1600.jpg',
     category: 'مالیات',
     date: '۱۰ شهریور ۱۴۰۴',
     dateIso: '2025-09-01',

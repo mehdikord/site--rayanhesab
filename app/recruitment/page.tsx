@@ -27,7 +27,7 @@ export default function RecruitmentPage() {
         title="جذب و معرفی حسابدار متخصص"
         description="پلی میان حسابداران متخصص و کسب‌وکارهایی که به نیروی مالی قابل اعتماد نیاز دارند؛ از ارزیابی تا هماهنگی مصاحبه."
         breadcrumbs={[{ label: 'جذب نیرو' }]}
-        image="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1600&q=80"
+        image="/images/unsplash-1521791136064-7986c2920216-1600.jpg"
       >
         <div className="flex flex-wrap gap-3">
           <ButtonLink href="/recruitment/accountant" variant="on-dark" size="md">

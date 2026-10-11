@@ -94,7 +94,7 @@ export function Hero() {
           <div className="relative mx-auto max-w-[560px]">
             <div className="img-frame relative aspect-[5/6] overflow-hidden rounded-[36px] border border-white/10 shadow-hero sm:aspect-[4/5]">
               <Image
-                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1200&q=80"
+                src="/images/unsplash-1600880292203-757bb62b4baf-1200.jpg"
                 alt="جلسه مشاوره مالی تیم رایان با مدیران کسب‌وکار"
                 fill
                 sizes="(max-width: 1024px) 90vw, 560px"

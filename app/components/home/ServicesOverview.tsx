@@ -1,15 +1,17 @@
 import { Badge } from '@/app/components/ui/Badge';
 import { Container, Section, SectionHeading } from '@/app/components/ui/Section';
 import { ServiceCard } from '@/app/components/ui/cards';
-import { services } from '@/app/data/services';
+import { getServices } from '@/app/lib/site-data';
 
-export function ServicesOverview() {
+export async function ServicesOverview() {
+  const services = await getServices();
+
   return (
     <Section id="services" className="bg-cloud-100">
       <Container>
         <SectionHeading
           eyebrow="خدمات ما"
-          title="شش خدمه پایه برای رشد مالی شما"
+          title="خدمات پایه برای رشد مالی شما"
           description="هر یک از خدمات ما برای حل چالش‌های خاص مالی و حسابداری طراحی شده‌اند."
         />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

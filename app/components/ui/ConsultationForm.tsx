@@ -1,11 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mail, Phone, MessageSquare, ChevronDown, CheckCircle, AlertCircle, X } from 'lucide-react';
-import { cn, formatPrice } from '@/app/lib/utils';
+import { cn } from '@/app/lib/utils';
+import { submitConsultation } from '@/app/(site)/actions';
+import { normalizeMobile } from '@/app/lib/validation';
 
-export function ConsultationForm() {
+export interface ServiceOption {
+  value: string;
+  label: string;
+}
+
+export function ConsultationForm({ serviceOptions }: { serviceOptions?: ServiceOption[] }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
@@ -16,6 +23,8 @@ export function ConsultationForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [apiError, setApiError] = useState('');
+  const [, startTransition] = useTransition();
 
   const router = useRouter();
 
@@ -26,7 +35,7 @@ export function ConsultationForm() {
     }
     if (!field || field === 'phone') {
       if (!formData.phone.trim()) newErrors.phone = 'شماره موبایل الزامی است';
-      else if (!/^09\d{9}$/.test(formData.phone.replace(/\s/g, ''))) newErrors.phone = 'فرمت شماره موبایل صحیح نیست (مثال: 09123456789)';
+      else if (!normalizeMobile(formData.phone)) newErrors.phone = 'فرمت شماره موبایل صحیح نیست (مثال: 09123456789)';
     }
     if (!field || field === 'service') {
       if (!formData.service) newErrors.service = 'انتخاب خدمت الزامی است';
@@ -48,9 +57,22 @@ export function ConsultationForm() {
     e.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    setSubmitting(false);
-    setSubmitted(true);
+    setApiError('');
+    startTransition(async () => {
+      const res = await submitConsultation({
+        name: formData.name,
+        phone: formData.phone,
+        serviceSlug: formData.service,
+        message: formData.message,
+      });
+      setSubmitting(false);
+      if (res.ok) {
+        setSubmitted(true);
+        router.refresh();
+      } else {
+        setApiError(res.message ?? 'خطا در ثبت درخواست؛ دوباره تلاش کنید.');
+      }
+    });
   };
 
   if (submitted) {
@@ -61,7 +83,6 @@ export function ConsultationForm() {
         </div>
         <h3 className="mt-5 text-xl font-extrabold text-emerald-900">درخواست شما ثبت شد</h3>
         <p className="mt-2 text-emerald-700">تیم ما در اسرع وقت با شما تماس خواهد گرفت.</p>
-        <p className="mt-1 text-sm text-emerald-600">(این یک نمایش است و اطلاعات واقعی ارسال نشده است.)</p>
         <button
           onClick={() => { setSubmitted(false); setFormData({ name: '', phone: '', service: '', message: '' }); setStep(1); }}
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-6 py-2.5 text-sm font-bold text-white hover:bg-emerald-600"
@@ -73,14 +94,17 @@ export function ConsultationForm() {
     );
   }
 
-  const services = [
-    { value: '', label: 'یک خدمت را انتخاب کنید' },
+  const fallbackServices: ServiceOption[] = [
     { value: 'accounting-auditing', label: 'حسابداری و حسابرسی' },
     { value: 'tax-services', label: 'خدمات مالیاتی' },
     { value: 'financial-consulting', label: 'مشاوره مالی و کسب‌وکار' },
     { value: 'accounting-education', label: 'آموزش تخصصی حسابداری' },
     { value: 'talent-matching', label: 'جذب و معرفی حسابدار' },
     { value: 'business-financial-services', label: 'خدمات مالی سفارشی' },
+  ];
+  const services: ServiceOption[] = [
+    { value: '', label: 'یک خدمت را انتخاب کنید' },
+    ...(serviceOptions && serviceOptions.length > 0 ? serviceOptions : fallbackServices),
   ];
 
   const steps = [
@@ -234,9 +258,13 @@ export function ConsultationForm() {
             </button>
           )}
         </div>
+        {apiError && (
+          <p className="flex items-center justify-center gap-1.5 text-[13px] font-semibold text-red-600" role="alert">
+            <AlertCircle className="h-4 w-4" /> {apiError}
+          </p>
+        )}
         <p className="text-center text-[12px] text-ink-400">
           با ثبت درخواست، شما با <a href="/about" className="underline text-brand-600 hover:text-brand-700">قوانین و حریم خصوصی</a> موافقت می‌کنید.
-          <br />این فرم یک نمایش است و اطلاعات به سرور ارسال نمی‌شود.
         </p>
       </form>
     </div>

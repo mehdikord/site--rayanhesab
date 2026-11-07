@@ -185,7 +185,7 @@ export function FileUpload({
           ) : (
             <p className="text-[13px] text-ink-500">فایل رزومه را اینجا رها کنید یا انتخاب کنید</p>
           )}
-          <p className="mt-0.5 text-[11.5px] text-ink-400">PDF یا Word — حداکثر {maxSizeMb} مگابایت (فقط نمایشی، بارگذاری نمی‌شود)</p>
+          <p className="mt-0.5 text-[11.5px] text-ink-400">PDF یا Word — حداکثر {maxSizeMb} مگابایت</p>
         </div>
         {fileName ? (
           <button

@@ -1,11 +1,13 @@
 import type { MetadataRoute } from 'next';
-import { services } from '@/app/data/services';
-import { courses } from '@/app/data/courses';
-import { articles } from '@/app/data/articles';
+import { getSitemapData } from '@/app/lib/site-data';
+
+export const dynamic = 'force-dynamic';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://rayan.example.com';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { services, courses, articles } = await getSitemapData();
+
   const staticRoutes = [
     { url: '/', priority: 1 },
     { url: '/services', priority: 0.9 },
@@ -25,15 +27,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: r.priority,
   }));
 
-  const serviceRoutes = services.map((s) => ({
-    url: `${baseUrl}/services/${s.slug}`,
+  const serviceRoutes = services.map((slug) => ({
+    url: `${baseUrl}/services/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.8,
   }));
 
-  const courseRoutes = courses.map((c) => ({
-    url: `${baseUrl}/courses/${c.slug}`,
+  const courseRoutes = courses.map((slug) => ({
+    url: `${baseUrl}/courses/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.75,
@@ -41,7 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const articleRoutes = articles.map((a) => ({
     url: `${baseUrl}/articles/${a.slug}`,
-    lastModified: new Date(a.dateIso),
+    lastModified: new Date(a.lastModified),
     changeFrequency: 'monthly' as const,
     priority: 0.6,
   }));

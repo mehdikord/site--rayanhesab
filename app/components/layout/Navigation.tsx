@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, Phone, Mail, ArrowUpLeft } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
@@ -16,16 +17,31 @@ const mainNav = [
   { label: 'تماس', href: '/contact' },
 ];
 
-const serviceMenu = [
-  { label: 'حسابداری و حسابرسی', href: '/services/accounting-auditing', desc: 'ساماندهی دفاتر و صورت‌های مالی' },
-  { label: 'خدمات مالیاتی', href: '/services/tax-services', desc: 'اظهارنامه، دفاع و برنامه‌ریزی' },
-  { label: 'مشاوره مالی و کسب‌وکار', href: '/services/financial-consulting', desc: 'تصمیم‌گیری مبتنی بر داده' },
-  { label: 'آموزش تخصصی حسابداری', href: '/services/accounting-education', desc: 'مهارت برای بازار کار' },
-  { label: 'جذب حسابدار متخصص', href: '/services/talent-matching', desc: 'تطبیق استعداد و کسب‌وکار' },
-  { label: 'خدمات مالی سفارشی', href: '/services/business-financial-services', desc: 'راهکار متناسب با شما' },
-];
+export interface NavService {
+  title: string;
+  short: string;
+  slug: string;
+}
 
-export function Navigation() {
+export function Navigation({
+  siteName,
+  phone,
+  phoneLink,
+  email,
+  services,
+}: {
+  siteName: string;
+  phone: string;
+  phoneLink: string;
+  email: string;
+  services: NavService[];
+}) {
+  const serviceMenu = services.map((s) => ({
+    label: s.title,
+    desc: s.short,
+    href: `/services/${s.slug}`,
+  }));
+
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -42,10 +58,13 @@ export function Navigation() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
+  // Close menus on navigation (adjust state during render, not in an effect).
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setMobileOpen(false);
     setMenuOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -73,18 +92,18 @@ export function Navigation() {
         )}
       >
         <nav className="mx-auto flex h-[68px] w-full max-w-7xl items-center justify-between gap-4 px-5 sm:px-8" aria-label="ناوبری اصلی">
-          <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="رایان حساب صبا — خانه">
-            <span
-              className={cn(
-                'grid h-10 w-10 place-items-center rounded-2xl text-[18px] font-black leading-none transition-colors',
-                solid ? 'bg-navy-900 text-white' : 'bg-white text-navy-900',
-              )}
-            >
-              ر
-            </span>
+          <Link href="/" className="flex shrink-0 items-center gap-3" aria-label={`${siteName} — خانه`}>
+            <Image
+              src="/logo.png"
+              alt={`لوگوی ${siteName}`}
+              width={40}
+              height={40}
+              priority
+              className="h-10 w-10 object-contain"
+            />
             <span className="flex flex-col leading-none">
               <span className={cn('text-[17px] font-extrabold tracking-tight transition-colors', solid ? 'text-navy-900' : 'text-white')}>
-                رایان حساب صبا
+                {siteName}
               </span>
               <span className={cn('mt-1 text-[10px] font-semibold tracking-[0.32em] uppercase transition-colors', solid ? 'text-ink-400' : 'text-white/60')} dir="ltr">
                 RAYAN
@@ -259,13 +278,13 @@ export function Navigation() {
                 <Phone className="h-4 w-4" aria-hidden="true" />
                 درخواست مشاوره رایگان
               </ButtonLink>
-              <a href="tel:+982100000000" className="flex items-center gap-3 rounded-2xl px-4 py-3 text-[14px] font-medium text-ink-600 hover:bg-cloud-100">
+              <a href={phoneLink} className="flex items-center gap-3 rounded-2xl px-4 py-3 text-[14px] font-medium text-ink-600 hover:bg-cloud-100">
                 <Phone className="h-4 w-4 text-brand-600" aria-hidden="true" />
-                <span className="ltr">۰۲۱ ۰۰۰۰ ۰۰۰۰</span>
+                <span className="ltr">{phone}</span>
               </a>
-              <a href="mailto:info@example.com" className="flex items-center gap-3 rounded-2xl px-4 py-3 text-[14px] font-medium text-ink-600 hover:bg-cloud-100">
+              <a href={`mailto:${email}`} className="flex items-center gap-3 rounded-2xl px-4 py-3 text-[14px] font-medium text-ink-600 hover:bg-cloud-100">
                 <Mail className="h-4 w-4 text-brand-600" aria-hidden="true" />
-                <span className="ltr">info@example.com</span>
+                <span className="ltr">{email}</span>
               </a>
             </div>
           </nav>

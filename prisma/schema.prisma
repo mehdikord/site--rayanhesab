@@ -1,0 +1,938 @@
+// Prisma schema for the rayanhesab MySQL database.
+// Mirrors data/schema.sql (Navicat export, 2026-11-05).
+// The live database already exists with seeded data; migrations were baselined
+// to match it (see prisma/migrations/).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ─────────────────────────────── Enums ───────────────────────────────
+
+enum ArticleStatus {
+  draft
+  published
+  archived
+}
+
+enum CourseStatus {
+  draft
+  published
+  archived
+}
+
+enum CompanyStatus {
+  pending
+  approved
+  rejected
+}
+
+enum ConsultationStatus {
+  new
+  in_progress
+  done
+  cancelled
+}
+
+enum ContactStatus {
+  new
+  read
+  replied
+  archived
+}
+
+enum CouponType {
+  percent
+  fixed
+}
+
+enum EnrollmentStatus {
+  active
+  expired
+  revoked
+}
+
+enum ExperienceLevel {
+  none
+  one_to_three
+  three_to_five
+  five_to_ten
+  over_five
+  over_ten
+}
+
+enum EmploymentType {
+  full_time
+  part_time
+  project
+  remote
+  internship
+}
+
+enum InvoicePaymentMethod {
+  gateway
+  wallet
+}
+
+enum InvoiceStatus {
+  pending
+  paid
+  failed
+  cancelled
+  refunded
+}
+
+enum JobRequestStatus {
+  new
+  reviewing
+  open
+  filled
+  closed
+  cancelled
+}
+
+enum ReferralStatus {
+  introduced
+  interview
+  hired
+  rejected
+}
+
+enum ServiceFeatureType {
+  problem
+  scope
+  benefit
+  audience
+}
+
+enum CourseFeatureType {
+  objective
+  audience
+  prerequisite
+}
+
+enum TalentApplicationStatus {
+  new
+  reviewing
+  approved
+  introduced
+  hired
+  rejected
+}
+
+enum TransactionStatus {
+  pending
+  success
+  failed
+  cancelled
+  refunded
+}
+
+enum TransactionType {
+  invoice_payment
+  wallet_charge
+}
+
+enum VerificationPurpose {
+  login
+  register
+  reset_password
+  verify_mobile
+}
+
+enum WalletTransactionType {
+  deposit
+  withdraw
+}
+
+// ──────────────────────────── Core entities ───────────────────────────
+
+model Admin {
+  id           BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  name         String       @db.VarChar(255)
+  mobile       String @db.VarChar(20)   @unique @map("mobile")
+  email        String       @unique @db.VarChar(255)
+  password     String       @db.VarChar(255)
+  isActive     Boolean      @default(true) @map("is_active")
+  lastLoginAt  DateTime?    @map("last_login_at")
+  rememberToken String? @db.VarChar(100) @map("remember_token")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  articles           Article[]
+  consultations      ConsultationRequest[]    @relation("consultationHandledBy")
+  contactMessages    ContactMessage[]         @relation("contactHandledBy")
+  enrollments        Enrollment[]             @relation("enrollmentGrantedBy")
+  jobRequests        JobRequest[]             @relation("jobHandledBy")
+  talentApplications TalentApplication[]      @relation("talentReviewedBy")
+  walletTransactions WalletTransaction[]
+
+  @@map("admins")
+}
+
+model ArticleCategory {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  description String?  @db.Text
+  sortOrder   Int      @default(0) @map("sort_order") @db.UnsignedInt
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  articles Article[]
+
+  @@map("article_categories")
+}
+
+model Article {
+  id                 BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  articleCategoryId  BigInt?        @map("article_category_id") @db.UnsignedBigInt
+  adminId            BigInt?        @map("admin_id") @db.UnsignedBigInt
+  slug               String         @unique @db.VarChar(255)
+  title              String         @db.VarChar(255)
+  excerpt            String?        @db.Text
+  body               String?        @db.LongText
+  image              String?        @db.VarChar(255)
+  authorName          String?        @map("author_name") @db.VarChar(255)
+  authorRole          String?        @map("author_role") @db.VarChar(255)
+  readingTime         Int?           @map("reading_time") @db.UnsignedSmallInt
+  viewsCount          Int            @default(0) @map("views_count") @db.UnsignedInt
+  status             ArticleStatus  @default(draft)
+  publishedAt        DateTime?      @map("published_at")
+  metaTitle          String?        @map("meta_title") @db.VarChar(255)
+  metaDescription    String?        @map("meta_description") @db.Text
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+
+  articleCategory ArticleCategory? @relation(fields: [articleCategoryId], references: [id], onDelete: SetNull)
+  admin           Admin?           @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  relatedAsSource ArticleRelated[] @relation("articleRelatedSource")
+  relatedAsTarget ArticleRelated[] @relation("articleRelatedTarget")
+
+  @@index([articleCategoryId])
+  @@index([adminId])
+  @@index([status, publishedAt])
+  @@map("articles")
+}
+
+model ArticleRelated {
+  id               BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  articleId        BigInt    @map("article_id") @db.UnsignedBigInt
+  relatedArticleId BigInt    @map("related_article_id") @db.UnsignedBigInt
+  sortOrder        Int      @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  article        Article @relation("articleRelatedSource", fields: [articleId], references: [id], onDelete: Cascade)
+  relatedArticle Article @relation("articleRelatedTarget", fields: [relatedArticleId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, relatedArticleId])
+  @@index([relatedArticleId])
+  @@map("article_related")
+}
+
+model Company {
+  id          BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  userId      BigInt?       @map("user_id") @db.UnsignedBigInt
+  name        String        @db.VarChar(255)
+  contactName String        @map("contact_name") @db.VarChar(255)
+  mobile      String @db.VarChar(20)    @map("mobile")
+  email       String?       @db.VarChar(255)
+  city        String?       @db.VarChar(255)
+  address     String?       @db.Text
+  website     String?       @db.VarChar(255)
+  description String?       @db.Text
+  status      CompanyStatus @default(pending)
+  adminNote   String?       @map("admin_note") @db.Text
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  jobRequests JobRequest[]
+
+  @@index([userId])
+  @@index([mobile])
+  @@index([status])
+  @@map("companies")
+}
+
+model ConsultationRequest {
+  id         BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  userId     BigInt?            @map("user_id") @db.UnsignedBigInt
+  serviceId  BigInt?            @map("service_id") @db.UnsignedBigInt
+  name       String             @db.VarChar(255)
+  mobile     String @db.VarChar(20)         @map("mobile")
+  message    String             @db.Text
+  status     ConsultationStatus @default(new)
+  adminNote  String?            @map("admin_note") @db.Text
+  handledBy  BigInt?            @map("handled_by") @db.UnsignedBigInt
+  handledAt  DateTime?          @map("handled_at")
+  ipAddress  String? @db.VarChar(45)       @map("ip_address")
+  createdAt  DateTime           @default(now()) @map("created_at")
+  updatedAt  DateTime           @updatedAt @map("updated_at")
+
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  service Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  admin   Admin?   @relation("consultationHandledBy", fields: [handledBy], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([serviceId])
+  @@index([handledBy])
+  @@index([status])
+  @@map("consultation_requests")
+}
+
+model ContactMessage {
+  id         BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  userId     BigInt?       @map("user_id") @db.UnsignedBigInt
+  name       String        @db.VarChar(255)
+  mobile     String @db.VarChar(20)    @map("mobile")
+  email      String?       @db.VarChar(255)
+  subject    String        @db.VarChar(255)
+  message    String        @db.Text
+  status     ContactStatus @default(new)
+  adminNote  String?       @map("admin_note") @db.Text
+  handledBy  BigInt?       @map("handled_by") @db.UnsignedBigInt
+  handledAt  DateTime?     @map("handled_at")
+  ipAddress  String? @db.VarChar(45)    @map("ip_address")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+
+  user  User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  admin Admin? @relation("contactHandledBy", fields: [handledBy], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([handledBy])
+  @@index([status])
+  @@map("contact_messages")
+}
+
+model Coupon {
+  id               BigInt     @id @default(autoincrement()) @db.UnsignedBigInt
+  code             String @db.VarChar(100) @unique @map("code")
+  title            String?    @db.VarChar(255)
+  type             CouponType @default(percent)
+  value            Int         @db.UnsignedInt
+  maxDiscount      Int?        @map("max_discount") @db.UnsignedInt
+  minOrderAmount   Int?        @map("min_order_amount") @db.UnsignedInt
+  usageLimit       Int?        @map("usage_limit") @db.UnsignedInt
+  usageLimitPerUser Int?       @map("usage_limit_per_user") @db.UnsignedInt
+  usedCount        Int         @default(0) @map("used_count") @db.UnsignedInt
+  startsAt         DateTime?  @map("starts_at")
+  expiresAt        DateTime?  @map("expires_at")
+  isActive         Boolean    @default(true) @map("is_active")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  courses   CouponCourse[]
+  invoices  Invoice[]
+
+  @@map("coupons")
+}
+
+model CouponCourse {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  couponId  BigInt   @map("coupon_id") @db.UnsignedBigInt
+  courseId  BigInt   @map("course_id") @db.UnsignedBigInt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([couponId, courseId])
+  @@index([courseId])
+  @@map("coupon_course")
+}
+
+model CourseCategory {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  description String?  @db.Text
+  sortOrder   Int      @default(0) @map("sort_order") @db.UnsignedInt
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  courses Course[]
+
+  @@map("course_categories")
+}
+
+model CourseChapter {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  courseId      BigInt    @map("course_id") @db.UnsignedBigInt
+  title         String    @db.VarChar(255)
+  description   String?   @db.Text
+  durationLabel String? @db.VarChar(100) @map("duration_label")
+  sortOrder     Int       @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  course   Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons  CourseLesson[]
+
+  @@index([courseId, sortOrder])
+  @@map("course_chapters")
+}
+
+model CourseFaq {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  courseId  BigInt   @map("course_id") @db.UnsignedBigInt
+  question  String @db.VarChar(500) @map("question")
+  answer    String   @db.Text
+  sortOrder Int      @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@map("course_faqs")
+}
+
+model CourseFeature {
+  id        BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  courseId  BigInt            @map("course_id") @db.UnsignedBigInt
+  type      CourseFeatureType
+  title     String @db.VarChar(500)
+  sortOrder Int               @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, type])
+  @@map("course_features")
+}
+
+model CourseLesson {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  courseChapterId BigInt   @map("course_chapter_id") @db.UnsignedBigInt
+  title          String    @db.VarChar(255)
+  description    String?  @db.Text
+  videoUrl       String? @db.VarChar(500) @map("video_url")
+  attachment     String? @db.VarChar(500) @map("attachment")
+  durationSeconds Int?     @map("duration_seconds") @db.UnsignedInt
+  isFreePreview  Boolean   @default(false) @map("is_free_preview")
+  sortOrder      Int       @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  chapter CourseChapter @relation(fields: [courseChapterId], references: [id], onDelete: Cascade)
+
+  progress LessonProgress[]
+
+  @@index([courseChapterId, sortOrder])
+  @@map("course_lessons")
+}
+
+model CourseRelated {
+  id               BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  courseId         BigInt   @map("course_id") @db.UnsignedBigInt
+  relatedCourseId  BigInt   @map("related_course_id") @db.UnsignedBigInt
+  sortOrder        Int      @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  course         Course @relation("courseRelatedSource", fields: [courseId], references: [id], onDelete: Cascade)
+  relatedCourse  Course @relation("courseRelatedTarget", fields: [relatedCourseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, relatedCourseId])
+  @@index([relatedCourseId])
+  @@map("course_related")
+}
+
+model CourseTag {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  courseId  BigInt   @map("course_id") @db.UnsignedBigInt
+  tagId     BigInt   @map("tag_id") @db.UnsignedBigInt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, tagId])
+  @@index([tagId])
+  @@map("course_tag")
+}
+
+model Course {
+  id              BigInt     @id @default(autoincrement()) @db.UnsignedBigInt
+  courseCategoryId BigInt?   @map("course_category_id") @db.UnsignedBigInt
+  instructorId    BigInt?    @map("instructor_id") @db.UnsignedBigInt
+  slug            String     @unique @db.VarChar(255)
+  title           String     @db.VarChar(255)
+  excerpt         String?    @db.Text
+  description     String?    @db.LongText
+  image           String?    @db.VarChar(255)
+  durationLabel   String?    @map("duration_label") @db.VarChar(255)
+  level           String? @db.VarChar(100) @map("level")
+  price           Int        @default(0) @db.UnsignedInt
+  originalPrice   Int?       @map("original_price") @db.UnsignedInt
+  isFeatured      Boolean    @default(false) @map("is_featured")
+  status          CourseStatus @default(draft)
+  publishedAt     DateTime? @map("published_at")
+  sortOrder       Int        @default(0) @map("sort_order") @db.UnsignedInt
+  metaTitle       String?    @map("meta_title") @db.VarChar(255)
+  metaDescription String?    @map("meta_description") @db.Text
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  category  CourseCategory?  @relation(fields: [courseCategoryId], references: [id], onDelete: SetNull)
+  instructor Instructor?    @relation(fields: [instructorId], references: [id], onDelete: SetNull)
+  chapters  CourseChapter[]
+  faqs      CourseFaq[]
+  features  CourseFeature[]
+  relatedAsSource CourseRelated[] @relation("courseRelatedSource")
+  relatedAsTarget CourseRelated[] @relation("courseRelatedTarget")
+  tags      CourseTag[]
+  coupons   CouponCourse[]
+  enrollments Enrollment[]
+  invoiceItems InvoiceItem[]
+
+  @@index([courseCategoryId])
+  @@index([instructorId])
+  @@index([status, isFeatured])
+  @@map("courses")
+}
+
+model Enrollment {
+  id         BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  userId     BigInt           @map("user_id") @db.UnsignedBigInt
+  courseId   BigInt           @map("course_id") @db.UnsignedBigInt
+  invoiceId  BigInt?          @map("invoice_id") @db.UnsignedBigInt
+  grantedBy  BigInt?          @map("granted_by") @db.UnsignedBigInt
+  status     EnrollmentStatus @default(active)
+  startsAt   DateTime         @default(now()) @map("starts_at")
+  expiresAt  DateTime?        @map("expires_at")
+  progress   Int              @default(0) @db.UnsignedTinyInt
+  completedAt DateTime?      @map("completed_at")
+  createdAt  DateTime         @default(now()) @map("created_at")
+  updatedAt  DateTime         @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  invoice Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  admin   Admin?   @relation("enrollmentGrantedBy", fields: [grantedBy], references: [id], onDelete: SetNull)
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+  @@index([invoiceId])
+  @@index([grantedBy])
+  @@map("enrollments")
+}
+
+model Instructor {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  name      String   @db.VarChar(255)
+  title     String?  @db.VarChar(255)
+  bio       String?  @db.Text
+  avatar    String?  @db.VarChar(255)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  courses Course[]
+
+  @@map("instructors")
+}
+
+model InvoiceItem {
+  id            BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  invoiceId     BigInt   @map("invoice_id") @db.UnsignedBigInt
+  courseId      BigInt?  @map("course_id") @db.UnsignedBigInt
+  title         String   @db.VarChar(255)
+  originalPrice Int?     @map("original_price") @db.UnsignedInt
+  unitPrice     Int      @map("unit_price") @db.UnsignedInt
+  quantity      Int      @default(1) @db.UnsignedSmallInt
+  total         Int      @db.UnsignedInt
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  course  Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  @@index([invoiceId])
+  @@index([courseId])
+  @@map("invoice_items")
+}
+
+model Invoice {
+  id              BigInt              @id @default(autoincrement()) @db.UnsignedBigInt
+  userId          BigInt              @map("user_id") @db.UnsignedBigInt
+  couponId        BigInt?             @map("coupon_id") @db.UnsignedBigInt
+  number          String @db.VarChar(50)          @unique @map("number")
+  status          InvoiceStatus       @default(pending)
+  paymentMethod   InvoicePaymentMethod? @map("payment_method")
+  subtotal        Int                 @default(0) @db.UnsignedInt
+  discountAmount  Int                 @default(0) @map("discount_amount") @db.UnsignedInt
+  couponCode      String? @db.VarChar(100)        @map("coupon_code")
+  taxRate         Decimal             @default(10.00) @map("tax_rate") @db.Decimal(5, 2)
+  taxAmount       Int                 @default(0) @map("tax_amount") @db.UnsignedInt
+  total           Int                 @default(0) @db.UnsignedInt
+  billingName     String              @map("billing_name") @db.VarChar(255)
+  billingMobile   String @db.VarChar(20)          @map("billing_mobile")
+  billingEmail    String?             @map("billing_email") @db.VarChar(255)
+  billingNationalCode String? @db.VarChar(10)     @map("billing_national_code")
+  note            String?             @db.Text
+  paidAt          DateTime?           @map("paid_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  coupon   Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  items    InvoiceItem[]
+  enrollments Enrollment[]
+  transactions Transaction[]
+  walletTransactions WalletTransaction[]
+
+  @@index([userId])
+  @@index([couponId])
+  @@index([status])
+  @@map("invoices")
+}
+
+model JobRequest {
+  id                 BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
+  companyId          BigInt          @map("company_id") @db.UnsignedBigInt
+  position           String          @db.VarChar(255)
+  city               String          @db.VarChar(255)
+  requiredExperience ExperienceLevel @map("required_experience")
+  employmentType     EmploymentType  @map("employment_type")
+  salaryRange        String?         @map("salary_range") @db.VarChar(255)
+  skills             String          @db.Text
+  description        String?         @db.Text
+  status             JobRequestStatus @default(new)
+  adminNote          String?         @map("admin_note") @db.Text
+  handledBy          BigInt?         @map("handled_by") @db.UnsignedBigInt
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+
+  company    Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  admin      Admin?         @relation("jobHandledBy", fields: [handledBy], references: [id], onDelete: SetNull)
+  referrals  TalentReferral[]
+
+  @@index([companyId])
+  @@index([handledBy])
+  @@index([status])
+  @@map("job_requests")
+}
+
+model LessonProgress {
+  id              BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  userId          BigInt   @map("user_id") @db.UnsignedBigInt
+  courseLessonId  BigInt   @map("course_lesson_id") @db.UnsignedBigInt
+  watchedSeconds  Int      @default(0) @map("watched_seconds") @db.UnsignedInt
+  completedAt     DateTime? @map("completed_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson  CourseLesson @relation(fields: [courseLessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseLessonId])
+  @@index([courseLessonId])
+  @@map("lesson_progress")
+}
+
+model ServiceFaq {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  serviceId BigInt   @map("service_id") @db.UnsignedBigInt
+  question  String @db.VarChar(500) @map("question")
+  answer    String   @db.Text
+  sortOrder Int      @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@map("service_faqs")
+}
+
+model ServiceFeature {
+  id          BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  serviceId   BigInt             @map("service_id") @db.UnsignedBigInt
+  type        ServiceFeatureType
+  title       String            @db.VarChar(255)
+  description String?           @db.Text
+  sortOrder   Int               @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId, type])
+  @@map("service_features")
+}
+
+model ServiceProcessStep {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  serviceId   BigInt   @map("service_id") @db.UnsignedBigInt
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  sortOrder   Int      @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@map("service_process_steps")
+}
+
+model ServiceRelated {
+  id                BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  serviceId         BigInt   @map("service_id") @db.UnsignedBigInt
+  relatedServiceId  BigInt   @map("related_service_id") @db.UnsignedBigInt
+  sortOrder         Int      @default(0) @map("sort_order") @db.UnsignedInt
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  service         Service @relation("serviceRelatedSource", fields: [serviceId], references: [id], onDelete: Cascade)
+  relatedService  Service @relation("serviceRelatedTarget", fields: [relatedServiceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, relatedServiceId])
+  @@index([relatedServiceId])
+  @@map("service_related")
+}
+
+model Service {
+  id            BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  slug          String   @unique @db.VarChar(255)
+  title         String   @db.VarChar(255)
+  shortTitle    String?  @map("short_title") @db.VarChar(255)
+  excerpt       String?  @db.Text
+  icon          String? @db.VarChar(100) @map("icon")
+  image         String?  @db.VarChar(255)
+  accent        String?  @db.VarChar(255)
+  sortOrder     Int      @default(0) @map("sort_order") @db.UnsignedInt
+  isActive      Boolean  @default(true) @map("is_active")
+  metaTitle     String?  @map("meta_title") @db.VarChar(255)
+  metaDescription String? @map("meta_description") @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  faqs      ServiceFaq[]
+  features  ServiceFeature[]
+  steps     ServiceProcessStep[]
+  relatedAsSource ServiceRelated[] @relation("serviceRelatedSource")
+  relatedAsTarget ServiceRelated[] @relation("serviceRelatedTarget")
+  consultations ConsultationRequest[]
+
+  @@index([isActive, sortOrder])
+  @@map("services")
+}
+
+model Setting {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  group     String   @default("general") @db.VarChar(100)
+  key       String   @unique @db.VarChar(255)
+  value     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([group])
+  @@map("settings")
+}
+
+model Tag {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  name      String   @db.VarChar(255)
+  slug      String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  courses CourseTag[]
+
+  @@map("tags")
+}
+
+model TalentApplication {
+  id            BigInt                  @id @default(autoincrement()) @db.UnsignedBigInt
+  userId        BigInt?                 @map("user_id") @db.UnsignedBigInt
+  fullName      String                  @map("full_name") @db.VarChar(255)
+  mobile        String @db.VarChar(20)               @map("mobile")
+  email         String?                 @db.VarChar(255)
+  city          String                  @db.VarChar(255)
+  position      String                  @db.VarChar(255)
+  experience    ExperienceLevel
+  employmentType EmploymentType         @map("employment_type")
+  skills        String                  @db.Text
+  intro         String                  @db.Text
+  resumePath    String? @db.VarChar(500)            @map("resume_path")
+  status        TalentApplicationStatus @default(new)
+  adminNote     String?                 @map("admin_note") @db.Text
+  reviewedBy    BigInt?                 @map("reviewed_by") @db.UnsignedBigInt
+  reviewedAt    DateTime?               @map("reviewed_at")
+  createdAt     DateTime                @default(now()) @map("created_at")
+  updatedAt     DateTime                @updatedAt @map("updated_at")
+
+  user     User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  admin    Admin?        @relation("talentReviewedBy", fields: [reviewedBy], references: [id], onDelete: SetNull)
+  referrals TalentReferral[]
+
+  @@index([userId])
+  @@index([reviewedBy])
+  @@index([status])
+  @@index([mobile])
+  @@map("talent_applications")
+}
+
+model TalentReferral {
+  id                   BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  jobRequestId         BigInt       @map("job_request_id") @db.UnsignedBigInt
+  talentApplicationId  BigInt       @map("talent_application_id") @db.UnsignedBigInt
+  status               ReferralStatus @default(introduced)
+  interviewAt          DateTime?    @map("interview_at")
+  note                 String?      @db.Text
+  createdAt            DateTime      @default(now()) @map("created_at")
+  updatedAt            DateTime      @updatedAt @map("updated_at")
+
+  jobRequest       JobRequest      @relation(fields: [jobRequestId], references: [id], onDelete: Cascade)
+  talentApplication TalentApplication @relation(fields: [talentApplicationId], references: [id], onDelete: Cascade)
+
+  @@unique([jobRequestId, talentApplicationId])
+  @@index([talentApplicationId])
+  @@map("talent_referrals")
+}
+
+model TeamMember {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  slug      String   @unique @db.VarChar(255)
+  name      String   @db.VarChar(255)
+  role      String   @db.VarChar(255)
+  expertise String?  @db.VarChar(255)
+  image     String?  @db.VarChar(255)
+  bio       String?  @db.Text
+  sortOrder Int      @default(0) @map("sort_order") @db.UnsignedInt
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("team_members")
+}
+
+model Transaction {
+  id          BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  userId      BigInt             @map("user_id") @db.UnsignedBigInt
+  invoiceId   BigInt?            @map("invoice_id") @db.UnsignedBigInt
+  type        TransactionType   @default(invoice_payment)
+  gateway     String @db.VarChar(50)        @map("gateway")
+  amount      Int               @db.UnsignedInt
+  status      TransactionStatus @default(pending)
+  authority   String?           @db.VarChar(255)
+  referenceId String?           @map("reference_id") @db.VarChar(255)
+  cardNumber  String? @db.VarChar(25)        @map("card_number")
+  description String? @db.VarChar(500)      @map("description")
+  meta        Json?
+  paidAt      DateTime?         @map("paid_at")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  user    User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  invoice Invoice?   @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  walletTransactions WalletTransaction[]
+
+  @@index([userId])
+  @@index([invoiceId])
+  @@index([status])
+  @@index([authority])
+  @@map("transactions")
+}
+
+model User {
+  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name            String    @db.VarChar(255)
+  mobile          String @db.VarChar(20) @unique @map("mobile")
+  email           String?   @unique @db.VarChar(255)
+  bio             String?   @db.Text
+  avatar          String?   @db.VarChar(255)
+  password        String?   @db.VarChar(255)
+  isActive        Boolean   @default(true) @map("is_active")
+  mobileVerifiedAt DateTime? @map("mobile_verified_at")
+  emailVerifiedAt  DateTime? @map("email_verified_at")
+  lastLoginAt     DateTime? @map("last_login_at")
+  rememberToken   String? @db.VarChar(100) @map("remember_token")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  companies        Company[]
+  consultations    ConsultationRequest[]
+  contactMessages  ContactMessage[]
+  enrollments      Enrollment[]
+  invoices         Invoice[]
+  lessonProgress   LessonProgress[]
+  talentApplications TalentApplication[]
+  transactions     Transaction[]
+  wallets          Wallet[]
+  walletTransactions WalletTransaction[]
+
+  @@map("users")
+}
+
+model VerificationCode {
+  id        BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  mobile    String @db.VarChar(20)        @map("mobile")
+  code      String            @db.VarChar(255)
+  purpose   VerificationPurpose @default(login)
+  attempts  Int               @default(0) @db.UnsignedTinyInt
+  expiresAt DateTime           @map("expires_at")
+  usedAt    DateTime?         @map("used_at")
+  ipAddress String? @db.VarChar(45)       @map("ip_address")
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  @@index([mobile, purpose])
+  @@map("verification_codes")
+}
+
+model Wallet {
+  id        BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  userId    BigInt @unique @map("user_id") @db.UnsignedBigInt
+  balance   Int    @default(0) @db.UnsignedInt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions   WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id            BigInt                @id @default(autoincrement()) @db.UnsignedBigInt
+  walletId      BigInt                @map("wallet_id") @db.UnsignedBigInt
+  userId        BigInt                @map("user_id") @db.UnsignedBigInt
+  invoiceId     BigInt?               @map("invoice_id") @db.UnsignedBigInt
+  transactionId BigInt?               @map("transaction_id") @db.UnsignedBigInt
+  adminId       BigInt?               @map("admin_id") @db.UnsignedBigInt
+  type          WalletTransactionType
+  amount        Int                   @db.UnsignedInt
+  balanceAfter  Int                   @map("balance_after") @db.UnsignedInt
+  description   String? @db.VarChar(500)          @map("description")
+  createdAt     DateTime              @default(now()) @map("created_at")
+  updatedAt     DateTime              @updatedAt @map("updated_at")
+
+  wallet      Wallet      @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoice     Invoice?    @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  transaction Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  admin       Admin?      @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([walletId])
+  @@index([userId])
+  @@index([invoiceId])
+  @@index([transactionId])
+  @@index([adminId])
+  @@map("wallet_transactions")
+}

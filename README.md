@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# رایان حساب صبا
 
-## Getting Started
+سایت و پنل مدیریت رایان حساب صبا — Next.js 16 (App Router)، Prisma 7، MySQL 8.
 
-First, run the development server:
+## راه‌اندازی محلی
 
 ```bash
+npm install
+cp .env.example .env        # مقادیر را تکمیل کنید
+npx prisma generate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- سایت: `http://localhost:3000`
+- پنل مدیریت: `http://localhost:3000/admins` (ورود با موبایل و رمز مدیر)
+- برای تست خرید بدون درگاه در محیط توسعه: `PAYMENT_DEV_FAKE=true` (در production نادیده گرفته می‌شود).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## استقرار (production)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm ci
+npx prisma generate
+npx prisma migrate deploy
+npm run build
+npm start
+```
 
-## Learn More
+متغیرهای ضروری (جزئیات در `.env.example`):
 
-To learn more about Next.js, take a look at the following resources:
+| متغیر | توضیح |
+| --- | --- |
+| `DATABASE_URL` | اتصال MySQL |
+| `SESSION_SECRET` | حداقل ۳۲ کاراکتر تصادفی؛ بدون آن پنل مدیریت بالا نمی‌آید |
+| `NEXT_PUBLIC_SITE_URL` | آدرس عمومی سایت (sitemap، متادیتا و آدرس بازگشت درگاه) |
+| `ZARINPAL_MERCHANT_ID` | مرچنت زرین‌پال؛ بدون آن خرید دوره‌های غیررایگان غیرفعال است |
+| `ZARINPAL_SANDBOX` | `true` برای محیط آزمایشی زرین‌پال |
+| `STORAGE_DIR` | محل ذخیره تصاویر آپلودی و رزومه‌ها (روی دیسک پایدار؛ پیش‌فرض `./storage`) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ساختار
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `app/(site)` — صفحات عمومی سایت (همه داده‌ها از دیتابیس، از طریق `app/lib/site-data.ts`)
+- `app/admins` — پنل مدیریت (احراز هویت با کوکی امضاشده + بررسی وضعیت مدیر در دیتابیس)
+- `app/lib/commerce.ts` — قوانین کوپن، محاسبه فاکتور و ثبت‌نام خودکار پس از پرداخت
+- `app/lib/payment/zarinpal.ts` — اتصال درگاه؛ بازگشت از درگاه: `app/payment/callback`
+- `app/lib/storage.ts` — ذخیره فایل؛ تصاویر عمومی از `/uploads/...`، رزومه‌ها فقط برای مدیر
 
-## Deploy on Vercel
+## نکات عملیاتی
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- محدودیت نرخ (ورود مدیر، فرم‌ها، کوپن) در حافظه هر پروسه است؛ در صورت اجرای چند نمونه، به Redis منتقل شود.
+- پوشه `STORAGE_DIR` را در بکاپ‌ها لحاظ کنید.
+- پرداخت با کیف پول تا راه‌اندازی حساب کاربری مشتریان غیرفعال است.

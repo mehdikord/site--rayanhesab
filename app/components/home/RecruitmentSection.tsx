@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { Briefcase, UserRound, ArrowUpLeft, Check } from 'lucide-react';
 import { Container, Eyebrow, Section, SectionHeading } from '@/app/components/ui/Section';
 import { ButtonLink } from '@/app/components/ui/Button';

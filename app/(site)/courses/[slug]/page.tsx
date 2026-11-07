@@ -1,0 +1,72 @@
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { Container, Section } from '@/app/components/ui/Section';
+import { PageHero } from '@/app/components/ui/PageHero';
+import { Badge } from '@/app/components/ui/Badge';
+import { getCourseDetail } from '@/app/lib/site-data';
+import { CourseDetail } from './CourseDetail';
+import { discountPercent, toFa } from '@/app/lib/utils';
+
+export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const detail = await getCourseDetail(slug);
+  if (!detail) return { title: 'دوره یافت نشد' };
+  return {
+    title: detail.metaTitle ?? detail.course.title,
+    description: detail.metaDescription ?? detail.course.excerpt,
+    alternates: { canonical: `/courses/${detail.course.slug}` },
+  };
+}
+
+export default async function CoursePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const detail = await getCourseDetail(slug);
+  if (!detail) notFound();
+
+  const { course, related } = detail;
+
+  const off = discountPercent(course.price, course.originalPrice);
+
+  return (
+    <div className="flex min-h-screen flex-col bg-cloud-100">
+      <PageHero
+        eyebrow={course.category}
+        title={course.title}
+        description={course.excerpt}
+        breadcrumbs={[{ label: 'دوره‌ها', href: '/courses' }, { label: course.title }]}
+        image={course.image}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          {course.tags.map((t) => (
+            <Badge key={t} tone="brand" className="border-white/10 bg-white/10 text-white">
+              {t}
+            </Badge>
+          ))}
+          {off && (
+            <span className="inline-flex items-center rounded-full bg-emerald-500 px-3 py-1 text-[12px] font-bold text-white">
+              {toFa(off)}٪ تخفیف
+            </span>
+          )}
+        </div>
+      </PageHero>
+
+      <div className="flex-1">
+        <Section className="bg-cloud-100">
+          <Container>
+            <CourseDetail course={course} related={related} />
+          </Container>
+        </Section>
+      </div>
+    </div>
+  );
+}

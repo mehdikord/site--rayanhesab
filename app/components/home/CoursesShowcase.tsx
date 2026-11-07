@@ -1,12 +1,15 @@
 import Link from 'next/link';
 import { ArrowUpLeft, Sparkles } from 'lucide-react';
-import { Container, Eyebrow, Section, SectionHeading } from '@/app/components/ui/Section';
+import { Container, Section, SectionHeading } from '@/app/components/ui/Section';
 import { CourseCard, CourseCardWide } from '@/app/components/ui/cards';
 import { ButtonLink } from '@/app/components/ui/Button';
-import { courses } from '@/app/data/courses';
+import { getCourses } from '@/app/lib/site-data';
 
-export function CoursesShowcase() {
+export async function CoursesShowcase() {
+  const courses = await getCourses();
   const featured = courses.find((c) => c.featured) ?? courses[0];
+  // Nothing published yet: hide the section instead of crashing the homepage.
+  if (!featured) return null;
   const rest = courses.filter((c) => c.slug !== featured.slug).slice(0, 6);
 
   return (

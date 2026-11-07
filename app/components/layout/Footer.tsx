@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, MapPin, Phone, Send, ArrowUpLeft } from 'lucide-react';
-import { services } from '@/app/data/services';
+import type { SiteSettings } from '@/app/lib/site-data';
+import type { Service } from '@/app/types';
 import { Container } from '@/app/components/ui/Section';
 
 const quickLinks = [
@@ -12,8 +14,22 @@ const quickLinks = [
   { label: 'تماس با ما', href: '/contact' },
 ];
 
-export function Footer() {
+export function Footer({
+  settings,
+  services,
+}: {
+  settings: SiteSettings;
+  services: Service[];
+}) {
   const year = new Intl.DateTimeFormat('fa-IR', { year: 'numeric' }).format(new Date()).replace(/[^۰-۹0-9]/g, '');
+
+  const socials = [
+    settings.telegram && { href: settings.telegram, label: 'تلگرام' },
+    settings.whatsapp && { href: settings.whatsapp, label: 'واتساپ' },
+    settings.instagram && { href: settings.instagram, label: 'اینستاگرام' },
+    settings.linkedin && { href: settings.linkedin, label: 'لینکدین' },
+    settings.email && { href: `mailto:${settings.email}`, label: 'ایمیل' },
+  ].filter(Boolean) as { href: string; label: string }[];
 
   return (
     <footer className="relative overflow-hidden bg-navy-950 text-white">
@@ -24,32 +40,35 @@ export function Footer() {
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <div className="flex items-center gap-3">
-              <span className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-[19px] font-black text-navy-900">ر</span>
+              <Image
+                src="/logo.png"
+                alt={`لوگوی ${settings.siteName}`}
+                width={44}
+                height={44}
+                className="h-11 w-11 object-contain"
+              />
               <span className="flex flex-col leading-none">
-                <span className="text-[18px] font-extrabold">رایان حساب صبا</span>
+                <span className="text-[18px] font-extrabold">{settings.siteName}</span>
                 <span className="mt-1 text-[10px] font-semibold tracking-[0.32em] text-white/50" dir="ltr">RAYAN</span>
               </span>
             </div>
-            <p className="mt-5 max-w-sm text-[14px] leading-8 text-white/60">
-              همراه مطمئن کسب‌وکار شما در مسیر رشد مالی؛ از خدمات تخصصی حسابداری و مالیاتی تا آموزش حرفه‌ای و جذب نیروی متخصص.
-            </p>
-            <div className="mt-6 flex items-center gap-2">
-              {[
-                { icon: Send, label: 'تلگرام' },
-                { icon: Send, label: 'واتساپ' },
-                { icon: Send, label: 'پیام' },
-                { icon: Send, label: 'ایمیل' },
-              ].map(({ icon: Icon, label }) => (
-                <a
-                  key={label}
-                  href="#"
-                  aria-label={label}
-                  className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-colors hover:bg-white hover:text-navy-900"
-                >
-                  <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
-                </a>
-              ))}
-            </div>
+            <p className="mt-5 max-w-sm text-[14px] leading-8 text-white/60">{settings.footerAbout}</p>
+            {socials.length > 0 && (
+              <div className="mt-6 flex items-center gap-2">
+                {socials.map(({ href, label }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target={href.startsWith('mailto') ? undefined : '_blank'}
+                    rel={href.startsWith('mailto') ? undefined : 'noreferrer'}
+                    aria-label={label}
+                    className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-colors hover:bg-white hover:text-navy-900"
+                  >
+                    <Send className="h-[18px] w-[18px]" aria-hidden="true" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="lg:col-span-3">
@@ -83,15 +102,19 @@ export function Footer() {
             <ul className="mt-5 space-y-4 text-[13.5px] text-white/60">
               <li className="flex items-start gap-3">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" aria-hidden="true" />
-                <span className="ltr">۰۲۱ ۰۰۰۰ ۰۰۰۰</span>
+                <a href={settings.phoneLink} className="ltr transition-colors hover:text-white">
+                  {settings.phone}
+                </a>
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" aria-hidden="true" />
-                <span className="ltr">info@example.com</span>
+                <a href={`mailto:${settings.email}`} className="ltr transition-colors hover:text-white">
+                  {settings.email}
+                </a>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" aria-hidden="true" />
-                <span>آدرس دفتر مرکزی به‌زودی اعلام می‌شود.</span>
+                <span>{settings.address}</span>
               </li>
             </ul>
             <Link
@@ -105,10 +128,7 @@ export function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-7 text-[12.5px] text-white/45 sm:flex-row">
-          <p>© {year} رایان حساب صبا. تمامی حقوق محفوظ است.</p>
-          <p className="text-center sm:text-left">
-            این وب‌سایت یک نسخه نمایشی است و اطلاعات آن جنبه نمونه دارد.
-          </p>
+          <p>© {year} {settings.siteName}. تمامی حقوق محفوظ است.</p>
           <div className="flex items-center gap-5">
             <Link href="/about" className="transition-colors hover:text-white">حریم خصوصی</Link>
             <Link href="/contact" className="transition-colors hover:text-white">قوانین</Link>

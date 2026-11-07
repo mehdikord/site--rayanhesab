@@ -1,4 +1,4 @@
-import { Container, Eyebrow, Section, SectionHeading } from '@/app/components/ui/Section';
+import { Container, Section, SectionHeading } from '@/app/components/ui/Section';
 
 const steps = [
   { n: '۰۱', title: 'گفت‌وگو و شناخت', desc: 'اهداف، چالش‌ها و وضعیت فعلی شما را با دقت گوش می‌دهیم تا تصویر روشنی بسازیم.' },

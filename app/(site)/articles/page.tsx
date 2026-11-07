@@ -1,0 +1,49 @@
+import type { Metadata } from 'next';
+import { Container, Section } from '@/app/components/ui/Section';
+import { PageHero } from '@/app/components/ui/PageHero';
+import { ArticleCard } from '@/app/components/ui/cards';
+import { getArticles, getArticleCategories } from '@/app/lib/site-data';
+import { ArticlesExplorer } from './ArticlesExplorer';
+
+export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'مقالات و دانش مالی',
+  description:
+    'مقالات کاربردی درباره مالیات، حسابداری، مدیریت مالی، حسابرسی و رشد حرفه‌ای؛ راهنمایی برای تصمیم‌های مالی بهتر.',
+  alternates: { canonical: '/articles' },
+};
+
+export default async function ArticlesPage() {
+  const [articles, categories] = await Promise.all([getArticles(), getArticleCategories()]);
+  const featured = articles[0];
+
+  return (
+    <div className="flex min-h-screen flex-col bg-white">
+      <PageHero
+        compact
+        eyebrow="دانش مالی"
+        title="مقالات و راهنمای مالی"
+        description="محتوای کاربردی درباره مالیات، حسابداری، مدیریت مالی و رشد حرفه‌ای برای مدیران و حسابداران."
+        breadcrumbs={[{ label: 'مقالات' }]}
+        image="/images/unsplash-1450101499163-c8848c66ca85-1600.jpg"
+      />
+
+      <div className="flex-1">
+        {featured && (
+          <Section className="bg-white">
+            <Container>
+              <ArticleCard article={featured} featured />
+            </Container>
+          </Section>
+        )}
+
+        <Section className="bg-cloud-100 pt-0 sm:pt-0 lg:pt-0">
+          <Container>
+            <ArticlesExplorer articles={articles} categories={categories} />
+          </Container>
+        </Section>
+      </div>
+    </div>
+  );
+}

@@ -175,3 +175,44 @@ input, select, textarea, button {
     scroll-behavior: auto !important;
   }
 }
+
+/* Article body (HTML rendered from the database) */
+.article-body {
+  direction: rtl;
+  text-align: right;
+}
+.article-body h2 {
+  margin: 2.5rem 0 0.75rem;
+  font-size: 1.35rem;
+  line-height: 1.6;
+  font-weight: 800;
+  color: var(--color-navy-900);
+}
+.article-body p {
+  margin: 1rem 0;
+  font-size: 15.5px;
+  line-height: 1.9;
+  color: var(--color-ink-700);
+}
+.article-body ul,
+.article-body ol {
+  margin: 1.25rem 0;
+  padding-right: 1.5rem;
+}
+.article-body li {
+  margin: 0.5rem 0;
+  font-size: 14.5px;
+  line-height: 1.85;
+  color: var(--color-ink-700);
+}
+.article-body li::marker {
+  color: var(--color-brand-500);
+}
+.article-body strong {
+  color: var(--color-navy-900);
+}
+.article-body a {
+  color: var(--color-brand-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -1,19 +1,24 @@
-import { Vazirmatn } from 'next/font/google';
+import localFont from 'next/font/local';
 import type { Metadata } from 'next';
+import { getSiteSettings } from '@/app/lib/site-data';
 import './globals.css';
-import { Navigation } from '@/app/components/layout/Navigation';
-import { Footer } from '@/app/components/layout/Footer';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://rayan.example.com';
 
-const vazirmatn = Vazirmatn({
-  subsets: ['arabic', 'latin'],
+// Self-hosted Vazirmatn (variable, weights 100–900) from the `vazirmatn`
+// package: no dependency on Google Fonts at build time or for visitors.
+const vazirmatn = localFont({
+  src: './fonts/Vazirmatn-Variable.woff2',
   variable: '--font-vazirmatn',
+  weight: '100 900',
+  style: 'normal',
   display: 'swap',
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  preload: true,
+  fallback: ['Tahoma', 'sans-serif'],
 });
 
-export const metadata: Metadata = {
+/** Static defaults; DB-driven SEO settings are layered on top below. */
+const baseMetadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: 'رایان حساب صبا | مشاوره مالی، حسابداری، مالیاتی و آموزش',
@@ -38,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'fa_IR',
-    url: 'https://rayan-accounting.ir',
+    url: siteUrl,
     siteName: 'رایان حساب صبا',
     title: 'رایان حساب صبا | مشاوره مالی، حسابداری، مالیاتی و آموزش',
     description: 'همراه مطمئن کسب‌وکار شما در مسیر رشد مالی با خدمات تخصصی حسابداری، مالیاتی و آموزشی.',
@@ -57,10 +62,45 @@ export const metadata: Metadata = {
     description: 'مشاوره مالی، حسابداری، مالیاتی و آموزش تخصصی',
     images: ['/images/og-default.jpg'],
   },
-  verification: {
-    google: 'google-site-verification-code',
-  },
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
+
+/** Root metadata overrides driven by the SEO settings in the database. */
+export async function generateMetadata(): Promise<Metadata> {
+  let s;
+  try {
+    s = await getSiteSettings();
+  } catch {
+    s = undefined;
+  }
+  if (!s) return baseMetadata;
+  const name = s.siteName;
+  return {
+    ...baseMetadata,
+    title: {
+      default: s.seoTitle,
+      template: `%s | ${name}`,
+    },
+    description: s.seoDescription,
+    authors: [{ name }],
+    creator: name,
+    publisher: name,
+    openGraph: {
+      ...baseMetadata.openGraph,
+      url: s.siteUrl,
+      siteName: name,
+      title: s.seoTitle,
+      description: s.seoDescription,
+    },
+    twitter: {
+      ...baseMetadata.twitter,
+      title: name,
+      description: s.seoDescription,
+    },
+  };
+}
 
 export default function RootLayout({
   children,
@@ -70,9 +110,7 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" className={vazirmatn.variable}>
       <body className="antialiased">
-        <Navigation />
         {children}
-        <Footer />
       </body>
     </html>
   );

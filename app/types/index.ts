@@ -9,7 +9,9 @@ export interface Article {
   readingTime: number;
   author: string;
   authorRole: string;
-  content: { heading?: string; paragraphs: string[]; list?: string[] }[];
+  content?: { heading?: string; paragraphs: string[]; list?: string[] }[];
+  /** HTML body managed in the database (rendered with a sanitized wrapper). */
+  body?: string;
   related: string[];
 }
 
